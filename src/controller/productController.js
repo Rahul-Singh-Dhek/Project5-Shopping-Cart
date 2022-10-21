@@ -7,11 +7,7 @@ var nameRegex = /^[a-zA-Z\s]*$/;
 var priceRegex = /^[1-9]\d*(\.\d+)?$/;
 var installmentRegex = /^[1-9][0-9]?$/;
 
-
-
 //---------------------------- Create Product ----------------------------------------------///
-
-
 
 const createProduct = async (req, res) => {
     try {
