@@ -1,7 +1,5 @@
 
 const aws= require("aws-sdk")
-
-
 // s3 and cloud stodare
 //  step1: multer will be used to get access to the file in nodejs( from previous session learnings)
 //  step2:[BEST PRACTISE]:- always write s2 upload function separately- in a separate file/function..exptect it to take file as input and return the uploaded file as output
