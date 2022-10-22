@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Abhayjaat999/project-productsManagementGroup-6.git"
+    "url": "https://github.com/Rahul-Singh-Dhek/Project5-Shopping-Cart.git"
   },
-  "author": "Anand Pal,Abhay Singh, Mohd Yousuf,Rahul Singh Dhek",
+  "author": "Rahul Singh Dhek",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Abhayjaat999/project-productsManagementGroup-6/issues"
+    "url": "https://github.com/Rahul-Singh-Dhek/Project5-Shopping-Cart.git"
   },
-  "homepage": "https://github.com/Abhayjaat999/project-productsManagementGroup-6#readme",
+  "homepage": "https://github.com/Rahul-Singh-Dhek/Project5-Shopping-Cart.git",
   "dependencies": {
     "aws-sdk": "^2.1231.0",
     "bcrypt": "^5.1.0",
