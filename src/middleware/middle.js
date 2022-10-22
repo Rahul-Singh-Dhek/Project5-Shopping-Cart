@@ -12,6 +12,7 @@ const authentication = (req, res, next) => {
         if (!token) {
             return res.status(401).send({ status: false, msg: "token is required" });
         } else {
+            console.log(token)
             token = token.split(' ')[1]
         }
         jwt.verify(token, "YousufAbhayRahulAnand", (error, decodedtoken) => {
@@ -46,6 +47,9 @@ const authorisationbyBId = async function (req, res, next) {
         if (!userData) {
             return res.status(404).send({ status: false, message: 'No user exists with that id or Might be Deleted' });
         }
+        // console.log(decodedtoken.userId)
+        // console.log(userData._id.toString())
+
         if ((decodedtoken.userId !== userData._id.toString())) {
              return res.status(403).send({ status: false, message: "You are not a authorized user" }) 
         };

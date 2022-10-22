@@ -1,7 +1,7 @@
 const productModel = require("../models/productModel");
 const valid = require("../validator/validator");
 const { uploadFile } = require("../controller/awsController");
-const cartModel = require('../models/cartModel');
+
 
 var nameRegex = /^[a-zA-Z\s]*$/;
 var priceRegex = /^[1-9]\d*(\.\d+)?$/;
