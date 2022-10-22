@@ -25,8 +25,8 @@ const createOrder = async function (req, res) {
         } else {
             cancellable = true
         }
-        let cart = await cartModel.findById(req.body.cartId).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }).lean()
 
+        let cart = await cartModel.findById(req.body.cartId, { userId: 1, items: 1, totalPrice: 1, totalItems: 1 }).populate({ path: "items.productId", select: { title: 1, price: 1, availableSizes: 1, isDeleted: 1 } }).lean()
         if (!cart) {
             return res.status(400).send({ status: false, message: "NO cart exist from this cartId" });
         }
@@ -44,23 +44,36 @@ const createOrder = async function (req, res) {
             return res.status(400).send({ status: false, message: "Cart does not have any products to make orders." })
         }
 
+        let items = []
+        let totalPrice = 0
         let totalQuantity = 0
+        let outOfStock = []
+        let newCartItem = []
+        let newCartTotalPrice=0
+        
         for (let ele of cart.items) {
-            totalQuantity = totalQuantity + ele.quantity;
+            if (ele.productId.availableSizes.length > 0 && ele.productId.isDeleted == false) {
+                totalQuantity = totalQuantity + ele.quantity;
+                totalPrice = totalPrice + (ele.quantity * ele.productId.price)
+                items.push({ productId: ele.productId._id, quantity: ele.quantity })
+            } else {
+                outOfStock.push(ele.productId.title)
+                if (ele.productId.isDeleted == false) {
+                    newCartItem.push({ productId: ele.productId._id, quantity: ele.quantity })
+                    newCartTotalPrice=newCartTotalPrice+(ele.quantity * ele.productId.price)
+                }
+            }
+        }
+        let totalItems = items.length
+        let newCartTotalItems=newCartItem.length
+
+        let order = {
+            userId: cart.userId, items: items, totalPrice: totalPrice, totalItems: totalItems, totalQuantity: totalQuantity, cancellable: cancellable, status: "pending", deletedAt: null, isDeleted: false
         }
 
-        let order = { 
-            ...cart, 
-            totalQuantity: totalQuantity, 
-            cancellable: cancellable, 
-            status: "pending", 
-            deletedAt: null, 
-            isDeleted: false 
-        }
-
-
+ 
         let savedOrder = await orderModel.create(order);
-        await cartModel.findByIdAndUpdate(req.body.cartId, { items: [], totalItems: 0, totalPrice: 0 })
+        await cartModel.findByIdAndUpdate(req.body.cartId, {  items:newCartItem , totalItems: newCartTotalItems, totalPrice: newCartTotalPrice } )
 
         return res.status(201).send({ status: true, message: "Success", data: savedOrder });
 
@@ -96,10 +109,10 @@ const updateOrder = async function (req, res) {
         if (!["completed", "cancelled"].includes(status)) {
             return res.status(400).send({ status: false, message: "Please provide status from these options only ( 'completed' or 'cancelled')." });
         }
-  
+
 
         const findOrder = await orderModel.findOne({ _id: orderId, userId: userId })
-        if (!findOrder || findOrder.isDeleted==true)
+        if (!findOrder || findOrder.isDeleted == true)
             return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId} or my be deleted` })
 
 
@@ -128,8 +141,8 @@ const updateOrder = async function (req, res) {
                 return res.status(400).send({ status: false, message: "The status is already completed" });
             }
 
-        const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
-        return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
+            const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
+            return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
 
         }
 

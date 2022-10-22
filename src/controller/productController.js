@@ -12,14 +12,13 @@ var installmentRegex = /^[1-9][0-9]?$/;
 const createProduct = async (req, res) => {
     try {
         let data = req.body;
-        let {
-            title, description, price, currencyId, currencyFormat, availableSizes, style, installments, isFreeShipping } = data;
+        let {title, description, price, currencyId, availableSizes, style, installments, isFreeShipping } = data;
         if (Object.keys(data).length === 0) {
             return res.status(400).send({ status: false, message: "Request body is empty" });
         }
         let objectCreate = {};
 
-        let requiredField = ["title", "description", "price", "currencyId", "currencyFormat",];
+        let requiredField = ["title", "description", "price", "currencyId","availableSizes"];
         for (field of requiredField) {
             if (!data[field]) {
                 return res.status(400).send({status: false,message: `${field} is not present in request body`,});
@@ -36,7 +35,6 @@ const createProduct = async (req, res) => {
         objectCreate.price = price;
 
         if (!valid.isValid(currencyId)) return res.status(400).send({ status: false, message: "currencyId is invalid" });
-        if (!valid.isValid(currencyFormat))return res.status(400).send({ status: false, message: "currencyFormat is invalid" });
         if (currencyId !== "INR")return res.status(400).send({ status: false, message: "currencyId format is wrong" });
         objectCreate.currencyId = currencyId;
 
@@ -46,9 +44,7 @@ const createProduct = async (req, res) => {
         }
         //############################### currencyFormat ##################################//
 
-        let checkCurrencyFormat = "₹";
-        if (currencyFormat != checkCurrencyFormat) return res.status(400).send({ status: false, message: "you entered a invalid currencyFormat--> currencyFormat should be ₹", });
-        objectCreate.currencyFormat = currencyFormat;
+        objectCreate.currencyFormat ="₹";
 
         //#######################  image  ####################################//
         let image = req.files;
@@ -64,17 +60,7 @@ const createProduct = async (req, res) => {
 
         //################################### avalableSizes ##############################################//
 
-        if (!availableSizes) {
-            return res
-                .status(400)
-                .send({ status: false, message: "Available Sizes field is Required" })
-        }
         if (availableSizes) {
-            if (availableSizes.length === 0) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "Available Sizes field is Required 2" })
-            }
 
             let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
             let arrayOfSizes = availableSizes.split(" ");

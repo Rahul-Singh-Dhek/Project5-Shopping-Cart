@@ -40,6 +40,9 @@ const createCart = async function (req, res) {
         if (!product) {
             return res.status(404).send({ status: false, message: " productId not found!" })
         }
+        if(product.availableSizes.length==0){
+            return res.status(404).send({ status: false, message: " This product is currently out of stock!" })
+        }
 
         //************** Cart is Available ********************************/
 
